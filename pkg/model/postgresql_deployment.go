@@ -131,6 +131,19 @@ func PostgresqlDeployment(cr *v1alpha1.Keycloak) *v13.Deployment {
 							Resources: getPostgresResources(cr),
 						},
 					},
+					InitContainers: []v1.Container{
+						{
+							Name:    PostgresqlDeploymentName + "-permissions-fix",
+							Image:   "busybox",
+							Command: []string{"chown", "26:26", PostgresqlPersistentVolumeMountPath},
+							VolumeMounts: []v1.VolumeMount{
+								{
+									Name:      PostgresqlPersistentVolumeName,
+									MountPath: PostgresqlPersistentVolumeMountPath,
+								},
+							},
+						},
+					},
 					Volumes: []v1.Volume{
 						{
 							Name: PostgresqlPersistentVolumeName,
